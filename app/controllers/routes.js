@@ -1,4 +1,5 @@
 var postService = require("../services/postService.js");
+var userService = require("../services/userService.js");
 var timeService = require("../services/timeService.js");
 var _ = require("underscore");
 
@@ -48,6 +49,21 @@ module.exports = function (app) {
 
     app.get('/login', function (req, res) {
         res.render('login', { data: '' });
+    });
+
+    app.post('/login', function (req, res) {
+        res.render('login', { data: '' });
+    });
+
+    app.get('/create-user', function (req, res) {
+        res.render('createUser', { data: '' });
+    });
+
+    app.post('/create-user', function (req, res) {
+        var body = _.pick(req.body, "username", "password");
+        userService.createUser(body)
+            .then(user => res.render('createUser', { data: { status: 200, message: 'Created with success!' } }))
+            .catch(user => res.render('createUser', { data: { status: 500, message: 'Something is wrong!' } }));
     });
 
 }
