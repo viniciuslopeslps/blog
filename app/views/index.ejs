@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<% include shared/head %>
+<% include shared/nav %>
+<body>
+    <h1 class="text-center">Code Blog</h1>
+    <br />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Vinícius Lopes</h4>
+                            <h6 class="card-subtitle mb-2 text-muted">Software Engineer</h6>
+                            <p class="card-text">Brazilian, code lover, read addicted.</p>
+                            <a href="https://github.com/viniciuslopeslps" class="card-link"> <i data-feather="github"></i></a>
+                            <a href="mailto:viniciuslopeslps@gmail.com" class="card-link"><i data-feather="mail"></i></a>
+                            <a href="https://twitter.com/viniciuslpslps" class="card-link"><i data-feather="twitter"></i></a> 
+                            <a href="https://br.linkedin.com/in/lopesvinicius" class="card-link"><i data-feather="user"></i></a>                                                        
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+                <div class="col-md-12">
+                    <h4>Posts by date</h4> 
+                    <ul class="list-group">
+                        <% lastMonths.forEach(function(date) { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="/findByAllDate?month=<%= date.month %>&year=<%= date.year %>">
+                                    <%= date.dateVew %>
+                                </a>
+                            </li>
+                        <% });%>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <% lastPosts.forEach(function(post){ %>
+                    <div class="card">
+                        <div class="card-header">
+                            <%= post.smallTitle %> # <%= post.id %> 
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title"><%= post.bigTitle %></h4>
+                            <p class="card-text"><%= post.about %></p>
+                            <a href="/find/<%= post.id %>" class="btn btn-primary">Read More!</a>
+                        </div>
+                    </div>
+                <% })%>
+                <br />
+            </div> 
+        </div>
+    </div>
+</body>
+ <% include shared/footer %>
+</html>
