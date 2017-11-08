@@ -46,4 +46,8 @@ module.exports = function (app) {
             .catch(err => res.render('error'));
     });
 
+    app.get('/login', function (req, res) {
+        res.render('login', { data: '' });
+    });
+
 }

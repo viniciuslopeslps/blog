@@ -2,15 +2,17 @@
 <html>
 <% include shared/head %>
 <% include shared/nav %>
-    <body>
-        <div class="container">
-            <div class="jumbotron">
-                <h1><%= post.bigTitle %> <span class="badge badge-secondary"><%= post.smallTitle %></span></h1>
-                <p class="lead"><%= post.about %></p>                
-                <hr class="my-4">
-                <p><%= post.fullText %></p>
-            </div>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1><%= post.bigTitle %> 
+                <span class="badge badge-secondary"><%= post.smallTitle %></span>
+            </h1>
+            <p class="lead"><%= post.about %></p>                
+            <hr class="my-4">
+            <p><%= post.fullText %></p>
         </div>
-    </body>
-    <% include shared/footer %>
-    </html>
+    </div>
+</body>
+<% include shared/footer %>
+</html>
