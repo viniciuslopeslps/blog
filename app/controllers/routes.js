@@ -1,12 +1,12 @@
 var postService = require("../services/postService.js");
 var userService = require("../services/userService.js");
 var timeService = require("../services/timeService.js");
+var middleware = require("../configs/middleware.js");
 var _ = require("underscore");
 
 module.exports = function (app) {
 
     app.get('/', function (req, res) {
-        console.log('Cookies: ', req.cookies);        
         postService.findLastPosts()
             .then(posts => {
                 res.render('index', {
@@ -16,7 +16,7 @@ module.exports = function (app) {
             .catch(err => res.render('error'));
     });
 
-    app.get('/make-data', function (req, res) {
+    app.get('/make-data', middleware.requireAuthentication, function (req, res) {
         res.render('makeData', { data: '' });
     });
 

@@ -11,10 +11,10 @@ function createUser(body) {
     }); ''
 }
 
-function findByEmail(email) {
+function findByEmail(userEmail) {
     return db.user.findOne({
         where: {
-            email: email
+            email: userEmail
         }
     }).then((user) => {
         return user;
@@ -30,7 +30,7 @@ function generateToken(type, user) {
         return undefined;
     }
     try {
-        var stringData = JSON.stringify({ id: user.id, type: type });
+        var stringData = JSON.stringify({ id: user.id,email: user.email, type: type });
         var encryptedData = cryptjs.AES.encrypt(stringData, 'secret').toString();
         var token = jwt.sign({
             token:encryptedData
@@ -41,9 +41,22 @@ function generateToken(type, user) {
     }
 }
 
+function findByToken(token){
+    var decodedJWT = jwt.verify(token, 'secret');
+    var bytes = cryptjs.AES.decrypt(decodedJWT.token, 'secret');
+    var tokenData = JSON.parse(bytes.toString(cryptjs.enc.Utf8));
+
+    return findByEmail(tokenData.email)
+        .then((user) => {
+            console.log(user);
+            return user;
+        }).catch(e => console.log(e));
+}
+
 module.exports = {
     createUser: createUser,
     findByEmail: findByEmail,
     comparePasswords: comparePasswords,
-    generateToken: generateToken
+    generateToken: generateToken,
+    findByToken: findByToken
 };
