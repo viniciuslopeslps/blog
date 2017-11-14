@@ -6,6 +6,7 @@ var _ = require("underscore");
 module.exports = function (app) {
 
     app.get('/', function (req, res) {
+        console.log('Cookies: ', req.cookies);        
         postService.findLastPosts()
             .then(posts => {
                 res.render('index', {
@@ -48,11 +49,23 @@ module.exports = function (app) {
     });
 
     app.get('/login', function (req, res) {
-        res.render('login', { data: '' });
+        res.render('login', { message: '' });
     });
 
     app.post('/login', function (req, res) {
-        res.render('login', { data: '' });
+        var body = _.pick(req.body, "email", "password");
+        userService.findByEmail(body.email)
+            .then(user => {
+                if (!user || !userService.comparePasswords(body.password, user.dataValues)) {
+                    res.redirect("/");
+                }
+                else {
+                    var token = userService.generateToken('authentication', user);
+                    console.log(token);
+                    res.cookie('token', token, { maxAge: 900000 });
+                    res.render("login", { message: "User found" })
+                }
+            }).catch(user => res.render("login", { message: "Login error" }));
     });
 
     app.get('/create-user', function (req, res) {
@@ -60,7 +73,7 @@ module.exports = function (app) {
     });
 
     app.post('/create-user', function (req, res) {
-        var body = _.pick(req.body, "username", "password");
+        var body = _.pick(req.body, "email", "password");
         userService.createUser(body)
             .then(user => res.render('createUser', { data: { status: 200, message: 'Created with success!' } }))
             .catch(user => res.render('createUser', { data: { status: 500, message: 'Something is wrong!' } }));
