@@ -28,7 +28,7 @@
                     <ul class="list-group">
                         <% lastMonths.forEach(function(date) { %>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="/findByAllDate?month=<%= date.month %>&year=<%= date.year %>">
+                                <a href="/post/findByAllDate?month=<%= date.month %>&year=<%= date.year %>">
                                     <%= date.dateVew %>
                                 </a>
                             </li>
@@ -45,7 +45,16 @@
                         <div class="card-body">
                             <h4 class="card-title"><%= post.bigTitle %></h4>
                             <p class="card-text"><%= post.about %></p>
-                            <a href="/find/<%= post.id %>" class="btn btn-primary">Read More!</a>
+                            <% if (currentUser.id == post.userId) {%>
+                                <form class="form-inline" method="POST" action="/post/delete">
+                                    <a href="/post/find/<%= post.id %>" class="btn btn-primary mb-2 mr-sm-2 mb-sm-0">
+                                        Read More!
+                                    </a>
+                                    <button type="input" class="btn btn-outline-danger"><i data-feather="x"></i></button>                                
+                                    <input type="hidden" name="userId" value="<%= currentUser.id %>"/>
+                                    <input type="hidden" name="postId" value="<%= post.id %> "/>
+                                </form>
+                            <% } %>
                         </div>
                     </div>
                 <% })%>

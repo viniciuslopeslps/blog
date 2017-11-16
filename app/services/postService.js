@@ -1,7 +1,8 @@
 var db = require("../configs/db.js");
 var sequelize = require("sequelize");
 
-function createPost(body) {
+function createPost(body, userId) {
+    body.userId = userId;
     return db.post.create(body).then((post) => {
         return post;
     });
@@ -37,6 +38,7 @@ function findById(id) {
             return post;
         });
 }
+
 function findAllByDate(year, month) {
     var startDate = new Date(year, month - 1);
     var endDate = new Date(year, month - 1, 31);
@@ -54,10 +56,21 @@ function findAllByDate(year, month) {
     });
 };
 
+function deletePost(userId, postId){
+    return db.post.destroy({
+        where: {
+            id: postId,
+            userId: userId
+        }
+    })
+    .then()
+}
+
 module.exports = {
     createPost: createPost,
     findLastPosts: findLastPosts,
     findById: findById,
     findGroupByDate: findGroupByDate,
-    findAllByDate: findAllByDate
+    findAllByDate: findAllByDate,
+    deletePost: deletePost
 };

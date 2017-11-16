@@ -6,9 +6,8 @@ var _ = require("underscore");
 
 function createUser(body) {
     return db.user.create(body).then((user) => {
-        console.log(user);
         return user;
-    }); ''
+    }); 
 }
 
 function findByEmail(userEmail) {
@@ -41,17 +40,25 @@ function generateToken(type, user) {
     }
 }
 
-function findByToken(token){
-    var decodedJWT = jwt.verify(token, 'secret');
-    var bytes = cryptjs.AES.decrypt(decodedJWT.token, 'secret');
-    var tokenData = JSON.parse(bytes.toString(cryptjs.enc.Utf8));
+function findByToken(token) {
+    return new Promise(function (resolve, reject) {
+        if (!token) {
+            return reject();
+        }
+        var decodedJWT = jwt.verify(token, 'secret');
+        var bytes = cryptjs.AES.decrypt(decodedJWT.token, 'secret');
+        var tokenData = JSON.parse(bytes.toString(cryptjs.enc.Utf8));
 
-    return findByEmail(tokenData.email)
-        .then((user) => {
-            console.log(user);
-            return user;
-        }).catch(e => console.log(e));
+        return findByEmail(tokenData.email)
+            .then((user) => {
+                if (!user) {
+                    return reject();
+                }
+                return resolve(user.dataValues);
+            }).catch(e => reject(e));
+    });
 }
+
 
 module.exports = {
     createUser: createUser,

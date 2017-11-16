@@ -9,32 +9,40 @@ module.exports = function (app) {
     app.get('/', function (req, res) {
         postService.findLastPosts()
             .then(posts => {
-                res.render('index', {
-                    lastPosts: posts, lastMonths: timeService.lastMonths
-                })
+                var token = req.cookies.token;   
+                var months = timeService.lastMonths;   
+                userService.findByToken(token)
+                    .then(user => {
+                        res.render('index', {
+                            lastPosts: posts, lastMonths: months, currentUser: user
+                        });
+                    })
+                    .catch(e => {
+                        res.render('index', { lastPosts: posts, lastMonths: months, currentUser:    '' });
+                    });
             })
             .catch(err => res.render('error'));
     });
 
-    app.get('/make-data', middleware.requireAuthentication, function (req, res) {
+    app.get('/post/make-data', middleware.requireAuthentication, function (req, res) {
         res.render('makeData', { data: '' });
     });
 
-    app.post('/make-data', function (req, res) {
+    app.post('/post/make-data',middleware.requireAuthentication, function (req, res) {
         var body = _.pick(req.body, "smallTitle", "bigTitle", "about", "fullText");
-        postService.createPost(body)
+        postService.createPost(body, req.user.id)
             .then(post => res.render('makeData', { data: { status: 200, message: 'Created with success!' } }))
             .catch(post => res.render('makeData', { data: { status: 500, message: 'Something is wrong!' } }));
     });
 
-    app.get('/find/:id', function (req, res) {
+    app.get('/post/find/:id', function (req, res) {
         var params = _.pick(req.params, "id");
         postService.findById(parseInt(params.id))
             .then((post) => res.render('post', { post: post }))
             .catch((post) => res.render('error'));
     });
 
-    app.get('/findByAllDate/', function (req, res) {
+    app.get('/post/findByAllDate/', function (req, res) {
         var params = _.pick(req.query, "month", "year");
         postService.findAllByDate(params.year, params.month)
             .then(posts => {
@@ -43,9 +51,17 @@ module.exports = function (app) {
                 }
                 res.render('index', {
                     lastPosts: posts, lastMonths: timeService.lastMonths
-                })
+                });
             })
             .catch(err => res.render('error'));
+    });
+
+    app.post('/post/delete', function(req, res){
+        var body = _.pick(req.body, "userId", "postId");
+        postService.deletePost(body.userId, body.postId)
+            .then(post => {
+                 res.redirect('/');
+            }).catch(e => console.log(e));
     });
 
     app.get('/login', function (req, res) {
