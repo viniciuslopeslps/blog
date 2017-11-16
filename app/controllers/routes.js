@@ -49,7 +49,7 @@ module.exports = function (app) {
     });
 
     app.get('/login', function (req, res) {
-        res.render('login', { message: '' });
+        res.render('login', { message: '', status: 200 });
     });
 
     app.post('/login', function (req, res) {
@@ -57,15 +57,14 @@ module.exports = function (app) {
         userService.findByEmail(body.email)
             .then(user => {
                 if (!user || !userService.comparePasswords(body.password, user.dataValues)) {
-                    res.redirect("/");
+                    res.render("login", { status: 500, message: "user not found!" })
                 }
                 else {
                     var token = userService.generateToken('authentication', user);
-                    console.log(token);
                     res.cookie('token', token, { maxAge: 900000 });
-                    res.render("login", { message: "User found" })
+                    res.render("login", { status: 200, message: "Login with success!" })
                 }
-            }).catch(user => res.render("login", { message: "Login error" }));
+            }).catch(user => res.render("login", { status: 500, message: "Login error" }));
     });
 
     app.get('/create-user', function (req, res) {
