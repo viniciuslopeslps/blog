@@ -28,7 +28,7 @@ module.exports = function (app) {
         res.render('makeData', { data: '' });
     });
 
-    app.post('/post/make-data',middleware.requireAuthentication, function (req, res) {
+    app.post('/post/make-data', middleware.requireAuthentication, function (req, res) {
         var body = _.pick(req.body, "smallTitle", "bigTitle", "about", "fullText");
         postService.createPost(body, req.user.id)
             .then(post => res.render('makeData', { data: { status: 200, message: 'Created with success!' } }))
@@ -81,6 +81,11 @@ module.exports = function (app) {
                     res.render("login", { status: 200, message: "Login with success!" })
                 }
             }).catch(user => res.render("login", { status: 500, message: "Login error" }));
+    });
+
+    app.get('/logout', middleware.requireAuthentication, function (req, res) {
+        res.clearCookie("token");        
+        res.render('login', { message: 'you are out!', status: 200 });
     });
 
     app.get('/create-user', function (req, res) {
