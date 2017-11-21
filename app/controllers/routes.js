@@ -13,13 +13,9 @@ module.exports = function (app) {
                 var months = timeService.lastMonths;   
                 userService.findByToken(token)
                     .then(user => {
-                        res.render('index', {
-                            lastPosts: posts, lastMonths: months, currentUser: user
-                        });
+                        res.render('index', { lastPosts: posts, lastMonths: months, currentUser: user});
                     })
-                    .catch(e => {
-                        res.render('index', { lastPosts: posts, lastMonths: months, currentUser:    '' });
-                    });
+                    .catch(e => { res.render('index', { lastPosts: posts, lastMonths: months, currentUser:    '' }); });
             })
             .catch(err => res.render('error'));
     });
@@ -49,9 +45,7 @@ module.exports = function (app) {
                 if(_.isEmpty(posts)){
                     res.render('noData')
                 }
-                res.render('index', {
-                    lastPosts: posts, lastMonths: timeService.lastMonths
-                });
+                res.render('index', {lastPosts: posts, lastMonths: timeService.lastMonths});
             })
             .catch(err => res.render('error'));
     });
@@ -59,9 +53,8 @@ module.exports = function (app) {
     app.post('/post/delete', function(req, res){
         var body = _.pick(req.body, "userId", "postId");
         postService.deletePost(body.userId, body.postId)
-            .then(post => {
-                 res.redirect('/');
-            }).catch(e => console.log(e));
+            .then(post => res.redirect('/'))
+            .catch(e => console.log(e));
     });
 
     app.get('/login', function (req, res) {
